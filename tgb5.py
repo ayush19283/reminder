@@ -57,8 +57,7 @@ async def handler(event):
         tit1=c[0:len(c)-2]
         tit=' '.join([i for i in tit1])
         
-        print(s)
-        print(tit)
+        
         f=c[len(c)-2:len(c)]
         print(f[0])
         print(f[1])
@@ -91,7 +90,7 @@ def calc():
             cur.execute('select chat_id,title from db where timedate<now() and done=0')
             ci.extend(cur.fetchall())
             conn.commit()
-            print(ci,"@")
+            
             if ci:
                 tri()
 ##            if ci:
@@ -106,7 +105,7 @@ def calc():
 def tri():
 
     for i in ci:
-        print('#@')
+        
         requests.get(f"https://api.telegram.org/bot2037652357:AAGJwNlXY2WBCeQTYNtEBbkmAxWbDjQ-zTg/sendMessage?chat_id={i[0]}&text=reminder-for-'{i[1]}'")
 
         cur.execute(f"update db set done=1 where chat_id={i[0]} and timedate<now()")
