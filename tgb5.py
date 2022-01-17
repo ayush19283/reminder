@@ -8,7 +8,7 @@ import threading
 import pytz
 import os 
 
-conn = psycopg2.connect('postgres://uqfmbcanlagxcp:b93ab3f7fc59414329b89bfdc9849a7bb0f53803570cc103d3543c6ce1cf3c82@ec2-54-224-64-114.compute-1.amazonaws.com:5432/d4aqtv1n0ml2nj')
+conn = psycopg2.connect(os.environ.get('DATABASE_URL'))
 cur=conn.cursor()
 
 api_id=os.environ.get('api_id')
