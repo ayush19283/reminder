@@ -14,7 +14,7 @@ cur=conn.cursor()
 api_id=os.environ.get('api_id')
 api_hash=os.environ.get('api_hash')
 str_sess=os.environ.get('str_sess')
-
+tk=os.environ.get('token')
 
 client = TelegramClient(StringSession(str_sess),
                     api_id,
@@ -106,7 +106,7 @@ def tri():
 
     for i in ci:
         
-        requests.get(f"https://api.telegram.org/bot2037652357:AAGJwNlXY2WBCeQTYNtEBbkmAxWbDjQ-zTg/sendMessage?chat_id={i[0]}&text=reminder-for-'{i[1]}'")
+        requests.get(f"https://api.telegram.org/bot{tk}/sendMessage?chat_id={i[0]}&text=reminder-for-'{i[1]}'")
 
         cur.execute(f"update db set done=1 where chat_id={i[0]} and timedate<now()")
         conn.commit()
