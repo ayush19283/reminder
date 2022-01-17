@@ -6,13 +6,14 @@ import requests
 import time
 import threading
 import pytz
+import os 
+
 conn = psycopg2.connect('postgres://uqfmbcanlagxcp:b93ab3f7fc59414329b89bfdc9849a7bb0f53803570cc103d3543c6ce1cf3c82@ec2-54-224-64-114.compute-1.amazonaws.com:5432/d4aqtv1n0ml2nj')
 cur=conn.cursor()
 
-api_id = '8925256'
-api_hash = 'd3a68074d2204bb004ca255cd009d337'
-token = '2037652357:AAGJwNlXY2WBCeQTYNtEBbkmAxWbDjQ-zTg'
-str_sess='1BVtsOHwBu0fXJLtCrcS5mOtbRKBvgj2kSnEzfpacu_BSFv70C8Q8k0Xngb41kaG2Cabj7HRH2yFmkAW7vYTYTjmbVLWqj7lK1HuFTbEnhsO86dqz4bNLr3dwDJ6LHRqOYpgBDGUc7MnqX3iEEq-F5jNbSaW6Xh-_bAYtwqbISZ6z0uUqYX4n6ulJAHluWrr099_o2W8DaTXU3ZshOKAaOho0BBDSNefBn_9CL8cMv_ROA77u11JtoBRLtxcEJ7iozMeaTXKxYArVu9_zW8D7-2eGMFWQ-TyNj4hDlEV4i8zb3CZ_ESgrCTQNBescE0IXTHXXdqMbhMksJTvIQ86WX2snR2aVsC8='
+api_id=os.environ.get('api_id')
+api_hash=os.environ.get('api_hash')
+str_sess=os.environ.get('str_sess')
 
 
 client = TelegramClient(StringSession(str_sess),
