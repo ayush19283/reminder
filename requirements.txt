@@ -2,3 +2,4 @@ python-telegram-bot
 telethon
 psycopg2
 pytz
+requests
