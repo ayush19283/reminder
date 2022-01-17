@@ -1,0 +1,137 @@
+from telethon import TelegramClient,events,sync
+from telethon.sessions import StringSession
+import psycopg2
+from datetime import datetime
+import requests
+import time
+import threading
+import pytz
+conn = psycopg2.connect('postgres://uqfmbcanlagxcp:b93ab3f7fc59414329b89bfdc9849a7bb0f53803570cc103d3543c6ce1cf3c82@ec2-54-224-64-114.compute-1.amazonaws.com:5432/d4aqtv1n0ml2nj')
+cur=conn.cursor()
+
+api_id = '8925256'
+api_hash = 'd3a68074d2204bb004ca255cd009d337'
+token = '2037652357:AAGJwNlXY2WBCeQTYNtEBbkmAxWbDjQ-zTg'
+str_sess='1BVtsOHwBu0fXJLtCrcS5mOtbRKBvgj2kSnEzfpacu_BSFv70C8Q8k0Xngb41kaG2Cabj7HRH2yFmkAW7vYTYTjmbVLWqj7lK1HuFTbEnhsO86dqz4bNLr3dwDJ6LHRqOYpgBDGUc7MnqX3iEEq-F5jNbSaW6Xh-_bAYtwqbISZ6z0uUqYX4n6ulJAHluWrr099_o2W8DaTXU3ZshOKAaOho0BBDSNefBn_9CL8cMv_ROA77u11JtoBRLtxcEJ7iozMeaTXKxYArVu9_zW8D7-2eGMFWQ-TyNj4hDlEV4i8zb3CZ_ESgrCTQNBescE0IXTHXXdqMbhMksJTvIQ86WX2snR2aVsC8='
+
+
+client = TelegramClient(StringSession(str_sess),
+                    api_id,
+                    api_hash,
+                    )
+##client.start()
+
+
+
+@client.on(events.NewMessage)
+async def handler(event):
+    message=''
+    sender = await event.get_sender()
+    if event.raw_text=='/set':
+            await event.reply('enter the title and date (YY-MM-DD) and time (HH:MM)')
+
+    message_crt_obj =await event.get_reply_message()
+   
+
+
+        
+        
+
+    message = message_crt_obj.raw_text
+##        print(message)
+##        try:
+    if message=='enter the title and date (YY-MM-DD) and time (HH:MM)':
+        print(1)
+        a=event.message.message
+##        message=''
+
+        
+        
+    
+    if '-' and ':' in a:
+        
+            
+        c=a.split(' ')
+        s=event.sender.id
+        tit1=c[0:len(c)-2]
+        tit=' '.join([i for i in tit1])
+        
+        print(s)
+        print(tit)
+        f=c[len(c)-2:len(c)]
+        print(f[0])
+        print(f[1])
+        
+        tm=f[0]+' '+f[1]
+        
+        local = pytz.timezone("Asia/Kolkata")
+        naive = datetime.strptime(tm, "%Y-%m-%d %H:%M")
+        local_dt = local.localize(naive, is_dst=None)
+        utc_dt = local_dt.astimezone(pytz.utc)
+        print(utc_dt)
+        
+
+        cur.execute(f"insert into db (chat_id,done,timedate,title) values ({s},0,'{utc_dt}','{tit}')")
+                   
+        conn.commit()
+    
+        print('done')
+    else:
+        pass
+        
+    
+   
+ci=[]
+
+def calc():
+    while 1:
+        time.sleep(0.4)
+        try:
+            cur.execute('select chat_id,title from db where timedate<now() and done=0')
+            ci.extend(cur.fetchall())
+            conn.commit()
+            print(ci,"@")
+            if ci:
+                tri()
+##            if ci:
+##                for i in ci:
+##                    li.append(i[0])
+##                    lj.append(i[1])
+                    
+                   
+        except psycopg2.ProgrammingError:
+            print('pgerror')
+
+def tri():
+
+    for i in ci:
+        print('#@')
+        requests.get(f"https://api.telegram.org/bot2037652357:AAGJwNlXY2WBCeQTYNtEBbkmAxWbDjQ-zTg/sendMessage?chat_id={i[0]}&text=reminder-for-'{i[1]}'")
+
+        cur.execute(f"update db set done=1 where chat_id={i[0]} and timedate<now()")
+        conn.commit()
+    
+        ci.remove(i)
+
+            
+        
+
+T3=threading.Thread(target=calc)
+
+
+T3.start()
+    
+
+
+
+    
+        
+   
+
+        
+        
+
+
+client.start()
+client.run_until_disconnected()
+
